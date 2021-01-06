@@ -1,0 +1,19 @@
+import codecademylib
+import pandas as pd
+df = pd.read_csv('inventory.csv')
+
+staten_island = df.iloc[:10]
+
+product_request = staten_island['product_description']
+
+seed_request = df[(df.location == "Brooklyn") & (df.product_type == "seeds")]
+print(seed_request)
+
+df['in_stock'] = df.quantity.apply(lambda x: x>0)
+df['total_value'] = df.quantity * df.price
+
+combine_lambda = lambda row: \
+    '{} - {}'.format(row.product_type,
+                     row.product_description)
+df['full_description'] = df.apply(combine_lambda, axis=1)
+print(df)
