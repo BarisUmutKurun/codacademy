@@ -1,0 +1,35 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import codecademylib3_seaborn
+import glob
+files = glob.glob("states*.csv")
+df_list = []
+for i in files:
+  data = pd.read_csv(i)
+  df_list.append(data)
+df = pd.concat(df_list,ignore_index=True)
+"""print(df.head())
+print(df.columns)
+print(df.dtypes)"""
+
+#Removing $ sign in Income column and making it numeric.
+df['Income'] = df['Income'].str.replace('$','')
+df['Income'] = pd.to_numeric(df['Income'])
+
+#Splitting GenderPop column into two new columns: MenPop, Womenpop. Making them numeric.
+df[['MenPop','WomenPop']] = df['GenderPop'].str.split('_',expand=True)
+df['MenPop'] = df['MenPop'].str.replace('M','')
+df['WomenPop'] = df['WomenPop'].str.replace('F','')
+df['MenPop']=pd.to_numeric(df['MenPop'])
+df['WomenPop']=pd.to_numeric(df['WomenPop'])
+
+#Scatter WomenPop vs Income Column
+plt.scatter(df['WomenPop'],df['Income'])
+plt.show()
+
+#Filling missing values in Womenpop column with TotalPop-MenPop estimation
+df['WomenPop'] = df['WomenPop'].fillna(df['TotalPop']-df['MenPop'])
+
+df.drop(['Unnamed: 0'], axis=1)
+print(df)
