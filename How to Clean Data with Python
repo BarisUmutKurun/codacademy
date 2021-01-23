@@ -25,11 +25,34 @@ df['MenPop']=pd.to_numeric(df['MenPop'])
 df['WomenPop']=pd.to_numeric(df['WomenPop'])
 
 #Scatter WomenPop vs Income Column
+"""plt.scatter(df['WomenPop'],df['Income'])
+plt.show()"""
+
+#Filling missing values in Womenpop column with TotalPop-MenPop estimation and pacific column with mean estimation.
+
+
+df['WomenPop'] = df['WomenPop'].fillna(df['TotalPop']-df['MenPop'])
+
+#Dropping the confusing unnamed column to find out duplicated rows.
+df = df.drop(['Unnamed: 0'], axis=1)
+
+
+df = df.drop_duplicates()
+
 plt.scatter(df['WomenPop'],df['Income'])
 plt.show()
 
-#Filling missing values in Womenpop column with TotalPop-MenPop estimation
-df['WomenPop'] = df['WomenPop'].fillna(df['TotalPop']-df['MenPop'])
+#loosing % sign from race columns and making them numeric.
+cols = ['Hispanic', 'White', 'Black', 'Native', 'Asian', 'Pacific']
+for i in range(len(cols)):
+  df[cols[i]] = df[cols[i]].str.replace('%','')
+  df[cols[i]] = pd.to_numeric(df[cols[i]]) 
 
-df.drop(['Unnamed: 0'], axis=1)
-print(df)
+#Plotting Histograms
+df['Pacific'] = df['Pacific'].fillna(df['Pacific'].mean())
+for i in range(len(cols)):
+ plt.hist(df[cols[i]])
+ plt.show()
+
+
+
